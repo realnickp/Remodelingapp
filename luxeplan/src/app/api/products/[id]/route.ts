@@ -50,14 +50,21 @@ export async function GET(
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
+    type ProductRow = {
+      product_prices?: Array<{ effective_at: string }>;
+      product_inventory?: Array<{ effective_at: string; availability?: string }>;
+      [key: string]: unknown;
+    };
+    const row = product as ProductRow;
+
     // Sort prices and inventory by most recent
-    const prices = (product.product_prices as Array<{ effective_at: string }>) ?? [];
+    const prices = row.product_prices ?? [];
     prices.sort(
       (a, b) =>
         new Date(b.effective_at).getTime() - new Date(a.effective_at).getTime()
     );
 
-    const inventory = (product.product_inventory as Array<{ effective_at: string }>) ?? [];
+    const inventory = row.product_inventory ?? [];
     inventory.sort(
       (a, b) =>
         new Date(b.effective_at).getTime() - new Date(a.effective_at).getTime()
@@ -65,7 +72,7 @@ export async function GET(
 
     return NextResponse.json({
       product: {
-        ...product,
+        ...row,
         product_prices: prices,
         product_inventory: inventory,
         current_price: prices[0] ?? null,

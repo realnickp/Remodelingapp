@@ -35,17 +35,18 @@ export class AssetPrepService {
     rejectionReason?: string;
   }> {
     // 1. Fetch product and primary image
-    const { data: product } = await this.db
+    const { data: productData } = await this.db
       .from("products")
       .select("id, category")
       .eq("id", productId)
       .single();
 
+    const product = productData as { id: string; category: string } | null;
     if (!product) {
       return { assets: [], rejected: true, rejectionReason: "Product not found" };
     }
 
-    const { data: primaryImage } = await this.db
+    const { data: primaryImageData } = await this.db
       .from("product_images")
       .select("image_url, width, height")
       .eq("product_id", productId)
@@ -53,6 +54,7 @@ export class AssetPrepService {
       .limit(1)
       .single();
 
+    const primaryImage = primaryImageData as { image_url?: string; width?: number; height?: number } | null;
     if (!primaryImage?.image_url) {
       return { assets: [], rejected: true, rejectionReason: "No primary image" };
     }
@@ -287,7 +289,8 @@ export class AssetPrepService {
   }
 
   private async storeAsset(asset: NormalizedAsset): Promise<void> {
-    const { error } = await this.db.from("product_assets").insert(asset);
+    const { error } = await this.db.from("product_assets")// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase client has no generated types for product_assets
+.insert(asset as any);
     if (error) {
       console.error(`[AssetPrepService] Failed to store asset:`, error.message);
     }
