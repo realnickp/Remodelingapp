@@ -1,0 +1,15 @@
+# Env and secrets
+.env*
+!.env.example
+
+# Dependencies and build
+node_modules/
+luxeplan/.next/
+luxeplan/out/
+.next/
+out/
+
+# Misc
+.DS_Store
+*.tsbuildinfo
+.vercel

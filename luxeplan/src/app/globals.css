@@ -1,0 +1,380 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────
+   LUXEPLAN Design System
+   Inspired by Architectural Digest, Apple configurator,
+   high-end boutique interior design studios
+   ───────────────────────────────────────────── */
+
+:root {
+  /* Warm neutrals palette */
+  --lx-black: #1a1714;
+  --lx-charcoal: #2d2925;
+  --lx-espresso: #3d3630;
+  --lx-stone: #6b6159;
+  --lx-warm-gray: #9c948b;
+  --lx-sand: #c4bbb2;
+  --lx-linen: #e8e2db;
+  --lx-cream: #f4f0eb;
+  --lx-ivory: #faf8f5;
+  --lx-white: #fdfcfa;
+
+  /* Accent — gold/bronze */
+  --lx-accent: #b8860b;
+  --lx-accent-light: #c9a227;
+  --lx-accent-muted: rgba(184, 134, 11, 0.12);
+  --lx-gold: #c9a227;
+  --lx-bronze: #9a7b4f;
+
+  /* Semantic */
+  --lx-success: #5a7a5e;
+  --lx-warning: #b08d57;
+  --lx-error: #9e5a5a;
+
+  /* Typography scale */
+  --lx-text-xs: 0.6875rem;
+  --lx-text-sm: 0.8125rem;
+  --lx-text-base: 0.9375rem;
+  --lx-text-lg: 1.125rem;
+  --lx-text-xl: 1.375rem;
+  --lx-text-2xl: 1.75rem;
+  --lx-text-3xl: 2.25rem;
+  --lx-text-4xl: 3rem;
+  --lx-text-5xl: 4rem;
+  --lx-text-6xl: 5.5rem;
+
+  /* Spacing scale */
+  --lx-space-1: 0.25rem;
+  --lx-space-2: 0.5rem;
+  --lx-space-3: 0.75rem;
+  --lx-space-4: 1rem;
+  --lx-space-5: 1.5rem;
+  --lx-space-6: 2rem;
+  --lx-space-8: 3rem;
+  --lx-space-10: 4rem;
+  --lx-space-12: 5rem;
+  --lx-space-16: 7rem;
+  --lx-space-20: 9rem;
+
+  /* Transitions */
+  --lx-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --lx-duration-fast: 200ms;
+  --lx-duration-base: 400ms;
+  --lx-duration-slow: 800ms;
+
+  /* Border radius — rounded edges across the app */
+  --lx-radius-sm: 8px;
+  --lx-radius-md: 12px;
+  --lx-radius-lg: 16px;
+  --lx-radius-xl: 24px;
+  --lx-radius-2xl: 32px;
+}
+
+@theme inline {
+  --color-background: var(--lx-white);
+  --color-foreground: var(--lx-black);
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-inter);
+
+  /* Expose palette to Tailwind */
+  --color-lx-black: var(--lx-black);
+  --color-lx-charcoal: var(--lx-charcoal);
+  --color-lx-espresso: var(--lx-espresso);
+  --color-lx-stone: var(--lx-stone);
+  --color-lx-warm-gray: var(--lx-warm-gray);
+  --color-lx-sand: var(--lx-sand);
+  --color-lx-linen: var(--lx-linen);
+  --color-lx-cream: var(--lx-cream);
+  --color-lx-ivory: var(--lx-ivory);
+  --color-lx-white: var(--lx-white);
+  --color-lx-accent: var(--lx-accent);
+  --color-lx-accent-light: var(--lx-accent-light);
+  --color-lx-gold: var(--lx-gold);
+  --color-lx-bronze: var(--lx-bronze);
+  --color-lx-success: var(--lx-success);
+  --color-lx-warning: var(--lx-warning);
+  --color-lx-error: var(--lx-error);
+}
+
+/* ─── Base Reset ─── */
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--lx-white);
+  color: var(--lx-charcoal);
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  font-size: var(--lx-text-base);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--lx-accent-muted);
+  color: var(--lx-black);
+}
+
+/* ─── Typography ─── */
+
+.font-editorial {
+  font-family: var(--font-cormorant), 'Georgia', serif;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.font-editorial-medium {
+  font-family: var(--font-cormorant), 'Georgia', serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.text-display {
+  font-family: var(--font-cormorant), 'Georgia', serif;
+  font-size: var(--lx-text-6xl);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.text-headline {
+  font-family: var(--font-cormorant), 'Georgia', serif;
+  font-size: var(--lx-text-4xl);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.text-title {
+  font-family: var(--font-cormorant), 'Georgia', serif;
+  font-size: var(--lx-text-2xl);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.text-subtitle {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: var(--lx-text-xs);
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--lx-stone);
+}
+
+.text-body {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: var(--lx-text-base);
+  font-weight: 350;
+  line-height: 1.65;
+  color: var(--lx-espresso);
+}
+
+.text-caption {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: var(--lx-text-xs);
+  font-weight: 400;
+  color: var(--lx-warm-gray);
+  letter-spacing: 0.01em;
+}
+
+/* ─── Luxury Buttons ─── */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  background: var(--lx-black);
+  color: var(--lx-ivory);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: var(--lx-text-xs);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--lx-radius-lg);
+  cursor: pointer;
+  transition: all var(--lx-duration-base) var(--lx-ease);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:hover {
+  background: var(--lx-espresso);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  background: transparent;
+  color: var(--lx-charcoal);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: var(--lx-text-xs);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--lx-sand);
+  border-radius: var(--lx-radius-lg);
+  cursor: pointer;
+  transition: all var(--lx-duration-base) var(--lx-ease);
+}
+
+.btn-secondary:hover {
+  border-color: var(--lx-charcoal);
+  background: var(--lx-ivory);
+}
+
+/* ─── Elegant Skeleton Loading ─── */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--lx-cream) 25%,
+    var(--lx-ivory) 50%,
+    var(--lx-cream) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s var(--lx-ease) infinite;
+  border-radius: var(--lx-radius-md);
+}
+
+/* ─── Dividers ─── */
+
+.divider {
+  height: 1px;
+  background: var(--lx-linen);
+  border: none;
+  margin: 0;
+}
+
+.divider-accent {
+  height: 1px;
+  width: 3rem;
+  background: var(--lx-accent);
+  border: none;
+  margin: 0;
+}
+
+/* ─── Scrollbar ─── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--lx-sand);
+  border-radius: var(--lx-radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--lx-warm-gray);
+}
+
+/* ─── Canvas / Studio specific ─── */
+
+.studio-canvas {
+  position: relative;
+  background: var(--lx-cream);
+  overflow: hidden;
+}
+
+.product-card-luxury {
+  position: relative;
+  cursor: pointer;
+  transition: all var(--lx-duration-base) var(--lx-ease);
+}
+
+.product-card-luxury:hover {
+  transform: translateY(-2px);
+}
+
+.product-card-luxury::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  transition: border-color var(--lx-duration-fast) var(--lx-ease);
+  pointer-events: none;
+}
+
+.product-card-luxury:hover::after {
+  border-color: var(--lx-accent);
+}
+
+/* ─── Film grain overlay ─── */
+
+.film-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+
+/* ─── Category Pills ─── */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.25rem;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: var(--lx-text-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lx-stone);
+  background: transparent;
+  border: 1px solid var(--lx-linen);
+  border-radius: var(--lx-radius-lg);
+  cursor: pointer;
+  transition: all var(--lx-duration-fast) var(--lx-ease);
+  white-space: nowrap;
+}
+
+.pill:hover {
+  border-color: var(--lx-sand);
+  color: var(--lx-charcoal);
+}
+
+.pill-active {
+  background: var(--lx-black);
+  color: var(--lx-ivory);
+  border-color: var(--lx-black);
+}
+
+.pill-active:hover {
+  background: var(--lx-espresso);
+  border-color: var(--lx-espresso);
+  color: var(--lx-ivory);
+}

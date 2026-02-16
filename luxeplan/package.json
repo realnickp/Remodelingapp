@@ -1,0 +1,44 @@
+{
+  "name": "luxeplan",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "analyze-images": "node scripts/analyze-product-images.mjs",
+    "worker": "npx tsx scripts/worker.ts",
+    "scheduler": "npx tsx scripts/scheduler.ts",
+    "scheduler:once": "npx tsx scripts/scheduler.ts --once",
+    "catalog:build": "npx tsx src/lib/ingestion/pinterest-catalog-builder.ts",
+    "populate-images": "npx tsx scripts/populate-pinterest-images.ts"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.95.3",
+    "framer-motion": "^12.34.0",
+    "next": "16.1.6",
+    "pg": "^8.18.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "sharp": "^0.34.5",
+    "uuid": "^13.0.0",
+    "zustand": "^5.0.11"
+  },
+  "devDependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
+    "dotenv": "^17.3.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  }
+}
