@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useProjectStore } from "@/store/useProjectStore";
 import {
@@ -97,6 +97,19 @@ export default function StudioTopBar() {
   const [isEditing, setIsEditing] = useState(false);
   const [conceptError, setConceptError] = useState<string | null>(null);
   const [stylePickerOpen, setStylePickerOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<"view" | "generate" | "more" | null>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (mobileMenuOpen === null) return;
+    const close = (e: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
+        setMobileMenuOpen(null);
+      }
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [mobileMenuOpen]);
 
   const handleSeeInYourSpace = useCallback(async () => {
     if (!project?.original_image_url || selections.length === 0) return;
@@ -314,7 +327,7 @@ export default function StudioTopBar() {
     <div className="min-h-14 pt-[env(safe-area-inset-top)] bg-lx-white border-b border-lx-linen rounded-b-[var(--lx-radius-xl)]">
       {/* Two rows on mobile: row 1 = logo + project; row 2 = scrollable actions */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3 md:gap-5 px-4 py-2 md:py-0 md:px-5 flex-shrink-0 border-b border-lx-linen md:border-b-0">
+        <div className="flex items-center gap-2 md:gap-5 px-4 py-2 md:py-0 md:px-5 flex-shrink-0 border-b border-lx-linen md:border-b-0 min-h-[44px]">
           <LuxeLogo size="large" />
           <div className="w-[1px] h-5 bg-lx-linen hidden md:block" />
 
@@ -336,10 +349,136 @@ export default function StudioTopBar() {
               {projectName}
             </button>
           )}
+
+          {/* Undo / Redo at top of header on mobile (always visible) */}
+          <div className="flex md:hidden items-center border border-lx-linen rounded-[var(--lx-radius-md)] overflow-hidden ml-auto">
+            <button
+              onClick={undoConcept}
+              disabled={!canUndo}
+              title="Undo"
+              className="min-h-[36px] min-w-[36px] flex items-center justify-center text-lx-stone hover:text-lx-charcoal disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
+              </svg>
+            </button>
+            <button
+              onClick={redoConcept}
+              disabled={!canRedo}
+              title="Redo"
+              className="min-h-[36px] min-w-[36px] flex items-center justify-center text-lx-stone hover:text-lx-charcoal disabled:opacity-30 disabled:cursor-not-allowed border-l border-lx-linen"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 4 23 10 17 10" />
+                <path d="M20.49 15a9 9 0 11-2.13-9.36L23 10" />
+              </svg>
+            </button>
+          </div>
         </div>
 
-        {/* Mobile: scrollable row; Desktop: no scroll, wrap to fit */}
-        <div className="overflow-x-auto md:overflow-visible overflow-y-hidden flex-1 min-w-0 md:min-w-0">
+        {/* Mobile: dropdown row (View, Generate, More); Desktop: full action row */}
+        <div ref={mobileMenuRef} className="md:hidden flex-1 min-w-0 px-4 py-2 flex items-center gap-2 relative">
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((o) => (o === "view" ? null : "view"))}
+            className={`min-h-[44px] flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-[0.6875rem] font-sans uppercase tracking-[0.1em] rounded-[var(--lx-radius-md)] border transition-colors ${
+              mobileMenuOpen === "view" ? "bg-lx-charcoal text-lx-ivory border-lx-charcoal" : "bg-lx-white text-lx-charcoal border-lx-linen hover:border-lx-sand"
+            }`}
+          >
+            View
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((o) => (o === "generate" ? null : "generate"))}
+            className={`min-h-[44px] flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-[0.6875rem] font-sans uppercase tracking-[0.1em] rounded-[var(--lx-radius-md)] border transition-colors ${
+              mobileMenuOpen === "generate" ? "bg-lx-charcoal text-lx-ivory border-lx-charcoal" : "bg-lx-white text-lx-charcoal border-lx-linen hover:border-lx-sand"
+            }`}
+          >
+            Generate
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((o) => (o === "more" ? null : "more"))}
+            className={`min-h-[44px] flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-[0.6875rem] font-sans uppercase tracking-[0.1em] rounded-[var(--lx-radius-md)] border transition-colors ${
+              mobileMenuOpen === "more" ? "bg-lx-charcoal text-lx-ivory border-lx-charcoal" : "bg-lx-white text-lx-charcoal border-lx-linen hover:border-lx-sand"
+            }`}
+          >
+            More
+          </button>
+
+          {mobileMenuOpen === "view" && (
+            <div className="absolute left-4 right-4 top-full mt-1 z-50 py-2 rounded-[var(--lx-radius-lg)] border border-lx-linen bg-lx-white shadow-xl">
+              <div className="flex items-center justify-between gap-3 min-h-[44px] px-4 py-2">
+                <span className="text-[0.8125rem] font-sans text-lx-charcoal">Before / After</span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={showBeforeAfter}
+                  onClick={() => toggleBeforeAfter()}
+                  className={`relative inline-flex h-7 w-12 flex-shrink-0 rounded-full border-2 transition-colors focus:outline-none focus:ring-2 focus:ring-lx-accent focus:ring-offset-2 ${
+                    showBeforeAfter ? "border-lx-charcoal bg-lx-charcoal" : "border-lx-linen bg-lx-linen"
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition-transform ${
+                      showBeforeAfter ? "translate-x-5" : "translate-x-0.5"
+                    }`}
+                  />
+                </button>
+              </div>
+              <button type="button" onClick={() => { setStudioMode("live"); setMobileMenuOpen(null); }} className="w-full text-left min-h-[44px] flex items-center px-4 py-2 text-[0.8125rem] font-sans text-lx-charcoal hover:bg-lx-linen">
+                Live
+              </button>
+              <button type="button" onClick={() => { setStudioMode("concept"); setMobileMenuOpen(null); }} disabled={!conceptImageUrl} className="w-full text-left min-h-[44px] flex items-center px-4 py-2 text-[0.8125rem] font-sans text-lx-charcoal hover:bg-lx-linen disabled:opacity-50 disabled:cursor-not-allowed">
+                Concept
+              </button>
+            </div>
+          )}
+
+          {mobileMenuOpen === "generate" && (
+            <div className="absolute left-4 right-4 top-full mt-1 z-50 py-2 rounded-[var(--lx-radius-lg)] border border-lx-linen bg-lx-white shadow-xl">
+              <button type="button" onClick={() => { handleSeeInYourSpace(); setMobileMenuOpen(null); }} disabled={!project?.original_image_url || selections.length === 0 || conceptLoading} className="w-full text-left min-h-[44px] flex items-center px-4 py-2 text-[0.8125rem] font-sans text-lx-charcoal hover:bg-lx-linen disabled:opacity-50 disabled:cursor-not-allowed">
+                {conceptLoading ? "Generating…" : "See it in your space"}
+              </button>
+              <button type="button" onClick={() => { setStylePickerOpen(true); setMobileMenuOpen(null); }} disabled={!project?.original_image_url || conceptLoading} className="w-full text-left min-h-[44px] flex items-center px-4 py-2 text-[0.8125rem] font-sans text-lx-charcoal hover:bg-lx-linen disabled:opacity-50 disabled:cursor-not-allowed">
+                New concept
+              </button>
+              {conceptError && (
+                <p className="px-4 py-2 text-[0.625rem] text-lx-error" title={conceptError}>{conceptError}</p>
+              )}
+            </div>
+          )}
+
+          {mobileMenuOpen === "more" && (
+            <div className="absolute left-4 right-4 top-full mt-1 z-50 py-2 rounded-[var(--lx-radius-lg)] border border-lx-linen bg-lx-white shadow-xl max-h-[70vh] overflow-y-auto">
+              {budget.total_low > 0 && (
+                <div className="px-4 py-2 border-b border-lx-linen">
+                  <p className="text-[0.5625rem] font-sans text-lx-warm-gray uppercase tracking-[0.1em]">Estimated Budget</p>
+                  <p className="font-editorial-medium text-lx-charcoal text-[0.9375rem]">${budget.total_low.toLocaleString()} — ${budget.total_high.toLocaleString()}</p>
+                </div>
+              )}
+              <button type="button" onClick={() => { handleDeselectAll(); setMobileMenuOpen(null); }} className="w-full text-left min-h-[44px] flex items-center px-4 py-2 text-[0.8125rem] font-sans text-lx-charcoal hover:bg-lx-linen">
+                Deselect all
+              </button>
+              <button type="button" onClick={() => { changeRoomInputRef.current?.click(); setMobileMenuOpen(null); }} className="w-full text-left min-h-[44px] flex items-center px-4 py-2 text-[0.8125rem] font-sans text-lx-charcoal hover:bg-lx-linen">
+                Change Room
+              </button>
+              <button type="button" onClick={() => { saveVersion(); setMobileMenuOpen(null); }} className="w-full text-left min-h-[44px] flex items-center gap-2 px-4 py-2 text-[0.8125rem] font-sans text-lx-charcoal hover:bg-lx-linen">
+                Save {versions.length > 0 && <span className="text-lx-warm-gray">v{versions.length}</span>}
+              </button>
+              <button type="button" onClick={() => { handleShare(); setMobileMenuOpen(null); }} className="w-full text-left min-h-[44px] flex items-center px-4 py-2 text-[0.8125rem] font-sans text-lx-charcoal hover:bg-lx-linen">
+                Share
+              </button>
+              <button type="button" onClick={() => { handleDownload(); setMobileMenuOpen(null); }} className="w-full text-left min-h-[44px] flex items-center px-4 py-2 text-[0.8125rem] font-sans text-lx-charcoal hover:bg-lx-linen">
+                Download
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Desktop: full action row — no scroll on md, wrap to fit */}
+        <div className="hidden md:block overflow-x-auto md:overflow-visible overflow-y-hidden flex-1 min-w-0 md:min-w-0">
           <div className="flex items-center gap-2 px-4 py-2 md:py-0 md:px-5 flex-nowrap md:flex-wrap w-max md:w-full md:justify-start md:gap-x-3 md:gap-y-2">
       {/* Center: Mode toggles */}
       <div className="flex items-center gap-2 flex-shrink-0">
@@ -417,40 +556,14 @@ export default function StudioTopBar() {
         </button>
 
         {/* New concept — change style and regenerate initial concept image */}
-        <div className="relative">
-          <button
-            onClick={() => setStylePickerOpen((o) => !o)}
-            disabled={!project?.original_image_url || conceptLoading}
-            className="min-h-[44px] flex items-center px-3 py-1.5 text-[0.625rem] font-sans uppercase tracking-[0.1em] bg-transparent text-lx-stone hover:text-lx-charcoal border border-lx-linen hover:border-lx-sand rounded-[var(--lx-radius-md)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            title="Pick a different style and generate a new initial concept image"
-          >
-            New concept
-          </button>
-          {stylePickerOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-[100]"
-                aria-hidden
-                onClick={() => setStylePickerOpen(false)}
-              />
-              {/* Fixed bottom sheet — same position on all screen sizes */}
-              <div className="fixed inset-x-0 bottom-0 z-[101] max-h-[70vh] overflow-y-auto rounded-t-[var(--lx-radius-xl)] border border-lx-linen border-b-0 bg-lx-white shadow-2xl py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-                <p className="px-4 py-2 text-[0.625rem] font-sans uppercase tracking-wider text-lx-warm-gray">
-                  Choose style — new concept image
-                </p>
-                {STYLES.map((style) => (
-                  <button
-                    key={style.id}
-                    onClick={() => handleNewConceptWithStyle(style.id as DesignStyle)}
-                    className="w-full text-left px-4 py-3 text-[0.8125rem] font-sans text-lx-charcoal hover:bg-lx-linen active:bg-lx-linen transition-colors min-h-[44px] flex items-center"
-                  >
-                    {style.title}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+        <button
+          onClick={() => setStylePickerOpen((o) => !o)}
+          disabled={!project?.original_image_url || conceptLoading}
+          className="min-h-[44px] flex items-center px-3 py-1.5 text-[0.625rem] font-sans uppercase tracking-[0.1em] bg-transparent text-lx-stone hover:text-lx-charcoal border border-lx-linen hover:border-lx-sand rounded-[var(--lx-radius-md)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          title="Pick a different style and generate a new initial concept image"
+        >
+          New concept
+        </button>
 
         {conceptError && (
           <p className="text-[0.625rem] text-lx-error max-w-[140px] truncate flex-shrink-0" title={conceptError}>
@@ -577,6 +690,31 @@ export default function StudioTopBar() {
           </div>
         </div>
       </div>
+
+      {/* Style picker — shared for desktop button and mobile Generate menu */}
+      {stylePickerOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-[100]"
+            aria-hidden
+            onClick={() => setStylePickerOpen(false)}
+          />
+          <div className="fixed inset-x-0 bottom-0 z-[101] max-h-[70vh] overflow-y-auto rounded-t-[var(--lx-radius-xl)] border border-lx-linen border-b-0 bg-lx-white shadow-2xl py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <p className="px-4 py-2 text-[0.625rem] font-sans uppercase tracking-wider text-lx-warm-gray">
+              Choose style — new concept image
+            </p>
+            {STYLES.map((style) => (
+              <button
+                key={style.id}
+                onClick={() => handleNewConceptWithStyle(style.id as DesignStyle)}
+                className="w-full text-left px-4 py-3 text-[0.8125rem] font-sans text-lx-charcoal hover:bg-lx-linen active:bg-lx-linen transition-colors min-h-[44px] flex items-center"
+              >
+                {style.title}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

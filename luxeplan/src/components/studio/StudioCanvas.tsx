@@ -74,14 +74,23 @@ export default function StudioCanvas() {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, cw, ch);
 
-    // Cover-fit the image (same as object-fit: cover)
     const imgAspect = src.width / src.height;
     const cAspect = cw / ch;
     let dw: number, dh: number, dx: number, dy: number;
-    if (imgAspect > cAspect) {
-      dh = ch; dw = ch * imgAspect; dx = (cw - dw) / 2; dy = 0;
+    // Mobile: show FULL image (contain); desktop: fill frame (cover)
+    const useContain = cw < 640;
+    if (useContain) {
+      const scale = Math.min(cw / src.width, ch / src.height);
+      dw = src.width * scale;
+      dh = src.height * scale;
+      dx = (cw - dw) / 2;
+      dy = (ch - dh) / 2;
     } else {
-      dw = cw; dh = cw / imgAspect; dx = 0; dy = (ch - dh) / 2;
+      if (imgAspect > cAspect) {
+        dh = ch; dw = ch * imgAspect; dx = (cw - dw) / 2; dy = 0;
+      } else {
+        dw = cw; dh = cw / imgAspect; dx = 0; dy = (ch - dh) / 2;
+      }
     }
     ctx.drawImage(src, dx, dy, dw, dh);
   }, [baseImage, conceptImage, studioMode]);
@@ -101,7 +110,7 @@ export default function StudioCanvas() {
     return () => window.removeEventListener("resize", renderCanvas);
   }, [renderCanvas]);
 
-  // Slider drag
+  // Slider drag — prevent browser back on touch when near left edge
   const handleSliderMove = useCallback(
     (clientX: number) => {
       if (!isDraggingSlider || !containerRef.current) return;
@@ -111,21 +120,30 @@ export default function StudioCanvas() {
     [isDraggingSlider]
   );
 
+  const handleSliderTouchStart = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    setIsDraggingSlider(true);
+  }, []);
+
   useEffect(() => {
     const onMove = (e: MouseEvent) => handleSliderMove(e.clientX);
     const onUp = () => setIsDraggingSlider(false);
-    const onTouch = (e: TouchEvent) => handleSliderMove(e.touches[0].clientX);
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+      handleSliderMove(e.touches[0]?.clientX ?? 0);
+    };
+    const onTouchEnd = () => setIsDraggingSlider(false);
     if (isDraggingSlider) {
       window.addEventListener("mousemove", onMove);
       window.addEventListener("mouseup", onUp);
-      window.addEventListener("touchmove", onTouch);
-      window.addEventListener("touchend", onUp);
+      window.addEventListener("touchmove", onTouchMove, { passive: false });
+      window.addEventListener("touchend", onTouchEnd);
     }
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
-      window.removeEventListener("touchmove", onTouch);
-      window.removeEventListener("touchend", onUp);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
     };
   }, [isDraggingSlider, handleSliderMove]);
 
@@ -225,6 +243,7 @@ export default function StudioCanvas() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute inset-0"
+            style={{ touchAction: "pan-y" }}
           >
             {conceptImageUrl && (
               /* eslint-disable-next-line @next/next/no-img-element */
@@ -246,9 +265,15 @@ export default function StudioCanvas() {
               className="absolute top-0 bottom-0 w-[2px] bg-white/70 cursor-ew-resize z-10"
               style={{ left: `${sliderPosition}%` }}
               onMouseDown={() => setIsDraggingSlider(true)}
-              onTouchStart={() => setIsDraggingSlider(true)}
+              onTouchStart={handleSliderTouchStart}
             >
-              <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg">
+              {/* Mobile: 44px invisible touch target so edge drag doesn't trigger browser back */}
+              <div
+                className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-11 min-w-[44px] md:hidden"
+                style={{ touchAction: "none" }}
+                aria-hidden
+              />
+              <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg pointer-events-none">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M4 3L1 7L4 11M10 3L13 7L10 11" stroke="#1a1714" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>

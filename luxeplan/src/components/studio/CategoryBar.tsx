@@ -57,8 +57,8 @@ export default function CategoryBar() {
 
   return (
     <div className="bg-lx-white border-b border-lx-linen px-4 py-2 rounded-b-[var(--lx-radius-lg)]">
-      <div className="overflow-x-auto overflow-y-hidden md:overflow-visible -mx-4 px-4 md:mx-0">
-        <div className="flex flex-nowrap md:flex-wrap items-center justify-center md:justify-center gap-1.5 min-w-max md:min-w-0 snap-x snap-mandatory md:snap-none">
+      <div className="overflow-x-auto overflow-y-hidden md:overflow-visible -mx-4 pl-4 pr-4 md:mx-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex flex-nowrap md:flex-wrap items-center justify-start md:justify-center gap-1.5 min-w-max md:min-w-0 snap-x snap-mandatory md:snap-none pr-4">
         {categories.map((cat) => {
           const isActive = activeCategory === cat.id;
           const hasSelection = selectedCategories.has(cat.id);

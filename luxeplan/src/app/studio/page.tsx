@@ -55,20 +55,24 @@ export default function StudioPage() {
       {/* Category bar — at top, below nav */}
       <CategoryBar />
 
-      {/* Main content — 50/50 on desktop; stack on mobile */}
-      <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-x-hidden">
-        {/* Left: Canvas — 50% on desktop; full width on mobile */}
-        <div className="w-full md:flex-[5] min-w-0 relative flex flex-col min-h-[40vh] md:min-h-0">
-          <div className="flex-1 min-h-0 relative">
+      {/* Main content — mobile: scroll to see products below; desktop: 50/50 */}
+      <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-x-hidden overflow-y-auto md:overflow-y-hidden">
+        {/* Left: first viewport on mobile (canvas + chat + bar); no overlap with products */}
+        <div className="w-full min-h-[calc(100vh-8rem)] md:min-h-0 flex-1 flex flex-col min-w-0 relative shrink-0 md:flex-[5]">
+          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
             <StudioCanvas />
             <RegionSelector />
+          </div>
+          <div className="flex-shrink-0 relative z-[25] bg-lx-white border-t border-lx-linen">
             <ChatPanel />
           </div>
-          <StudioBottomBar />
+          <div className="flex-shrink-0 z-20 bg-lx-white relative border-t border-lx-linen">
+            <StudioBottomBar />
+          </div>
         </div>
 
-        {/* Right: Product showroom — 50% on desktop; full width below canvas on mobile */}
-        <div className="w-full md:flex-[5] min-w-0 md:min-w-[280px] max-w-[480px] border-t md:border-t-0 md:border-l border-lx-linen flex flex-col min-h-0">
+        {/* Right: below the fold on mobile (scroll to see); 50% on desktop */}
+        <div className="w-full md:flex-[5] min-w-0 md:min-w-[280px] max-w-[480px] border-t md:border-t-0 md:border-l border-lx-linen flex flex-col min-h-[45vh] md:min-h-0 flex-none shrink-0 md:flex-[5]">
           <div className="flex-1 min-h-0 overflow-hidden">
             <ProductShowroom />
           </div>
